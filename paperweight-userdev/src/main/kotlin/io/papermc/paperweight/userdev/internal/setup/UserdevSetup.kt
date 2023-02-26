@@ -53,7 +53,7 @@ abstract class UserdevSetup : BuildService<UserdevSetup.Parameters>, SetupHandle
         val endpointOverride: Property<EndpointOverride>
     }
 
-    data class EndpointOverride (
+    data class EndpointOverride(
         val minecraftLibraries: String,
         val minecraftManifest: String,
         val paperMavenRepo: String,
