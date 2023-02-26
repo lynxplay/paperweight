@@ -30,12 +30,16 @@ import org.gradle.api.Task
 const val PAPERWEIGHT_EXTENSION = "paperweight"
 const val PAPERWEIGHT_DEBUG = "paperweight.debug"
 
+const val MC_LIBRARY_NAME = "minecraftLibraries"
 const val MC_LIBRARY_URL = "https://libraries.minecraft.net/"
 
+const val MC_MANIFEST_NAME = "minecraftManifest"
 const val MC_MANIFEST_URL = "https://piston-meta.mojang.com/mc/game/version_manifest_v2.json"
 
+const val PAPER_MAVEN_REPO_NAME = "paperMavenRepo"
 const val PAPER_MAVEN_REPO_URL = "https://repo.papermc.io/repository/maven-public/"
 
+const val MAVEN_CENTRAL_NAME = "mavenCentral"
 const val MAVEN_CENTRAL_URL = "https://repo.maven.apache.org/maven2/"
 
 const val PARAM_MAPPINGS_CONFIG = "paramMappings"

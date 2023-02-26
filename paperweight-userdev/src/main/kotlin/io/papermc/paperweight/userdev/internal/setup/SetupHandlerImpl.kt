@@ -43,6 +43,7 @@ class SetupHandlerImpl(
             cache,
             parameters.downloadService.get(),
             bundle.changed,
+            parameters.endpointOverride.map { it.minecraftManifest }.get()
         )
     }
     private val vanillaServerJar: Path = cache.resolve(paperSetupOutput("vanillaServerJar", "jar"))

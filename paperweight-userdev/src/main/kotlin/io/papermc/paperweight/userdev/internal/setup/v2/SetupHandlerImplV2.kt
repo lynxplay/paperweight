@@ -47,6 +47,7 @@ class SetupHandlerImplV2(
             cache,
             parameters.downloadService.get(),
             bundle.changed,
+            parameters.endpointOverride.map { it.minecraftManifest }.get()
         )
     }
     private val filteredVanillaServerJar: Path = cache.resolve(paperSetupOutput("filterJar", "jar"))
@@ -74,14 +75,14 @@ class SetupHandlerImplV2(
                     download = parameters.downloadService,
                     workerExecutor = context.workerExecutor,
                     targetDir = minecraftLibraryJars,
-                    repositories = listOf(MC_LIBRARY_URL, MAVEN_CENTRAL_URL),
+                    repositories = parameters.endpointOverride.map { listOf(it.minecraftLibraries, it.mavenCentral) }.get(),
                     mcLibraries = bundle.config.buildData.vanillaServerLibraries,
                     sources = false
                 ).await()
             }
 
             override fun touchHashFunctionBuilder(builder: HashFunctionBuilder) {
-                builder.include(MC_LIBRARY_URL)
+                builder.include(parameters.endpointOverride.map { it.minecraftLibraries }.get())
                 builder.include(bundle.config.buildData.vanillaServerLibraries)
                 builder.include(minecraftLibraryJars())
                 builder.includePaperweightHash = false

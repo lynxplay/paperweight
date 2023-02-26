@@ -36,6 +36,7 @@ class VanillaSteps(
     private val cache: Path,
     private val downloadService: DownloadService,
     private val bundleChanged: Boolean,
+    private val minecraftManifestURL: String
 ) {
     private val versionManifest: MinecraftVersionManifest by lazy { setupMinecraftVersionManifest() }
     val mojangJar: Path = cache.resolve(paperSetupOutput("downloadServerJar", "jar"))
@@ -58,7 +59,7 @@ class VanillaSteps(
         )
 
     private fun downloadMinecraftManifest(force: Boolean): DownloadResult<MinecraftManifest> =
-        downloadService.download("minecraft manifest", MC_MANIFEST_URL, cache.resolve(MC_MANIFEST), force)
+        downloadService.download("minecraft manifest", minecraftManifestURL, cache.resolve(MC_MANIFEST), force)
             .mapData { gson.fromJson(it.path) }
 
     private fun setupMinecraftVersionManifest(): MinecraftVersionManifest {

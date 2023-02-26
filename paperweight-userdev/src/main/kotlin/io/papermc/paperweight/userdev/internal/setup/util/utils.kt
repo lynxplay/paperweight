@@ -25,8 +25,9 @@ package io.papermc.paperweight.userdev.internal.setup.util
 import io.papermc.paperweight.DownloadService
 import io.papermc.paperweight.userdev.PaperweightUser
 import io.papermc.paperweight.userdev.internal.setup.UserdevSetup
+import io.papermc.paperweight.userdev.internal.setup.UserdevSetup.EndpointOverride
 import io.papermc.paperweight.util.*
-import io.papermc.paperweight.util.constants.USERDEV_SETUP_LOCK
+import io.papermc.paperweight.util.constants.*
 import java.nio.file.Files
 import java.nio.file.Path
 import java.nio.file.Paths
@@ -180,4 +181,17 @@ val Project.genSources: Boolean
         val ci = ci.get()
         val prop = providers.gradleProperty("paperweight.experimental.genSources").orNull?.toBoolean()
         return prop ?: !ci
+    }
+
+val Project.endpointOverride: EndpointOverride
+    get() {
+        val endpointFetcher = { it: Pair<String, String> ->
+            providers.gradleProperty("paperweight.experimental.endpointOverride.${it.first}").getOrElse(it.second)
+        }
+        return EndpointOverride(
+            endpointFetcher(MC_LIBRARY_NAME to MC_LIBRARY_URL),
+            endpointFetcher(MC_MANIFEST_NAME to MC_MANIFEST_URL),
+            endpointFetcher(PAPER_MAVEN_REPO_NAME to PAPER_MAVEN_REPO_URL),
+            endpointFetcher(MAVEN_CENTRAL_NAME to MAVEN_CENTRAL_URL)
+        )
     }

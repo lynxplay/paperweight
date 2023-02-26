@@ -28,6 +28,7 @@ import io.papermc.paperweight.tasks.*
 import io.papermc.paperweight.userdev.attribute.Obfuscation
 import io.papermc.paperweight.userdev.internal.setup.SetupHandler
 import io.papermc.paperweight.userdev.internal.setup.UserdevSetup
+import io.papermc.paperweight.userdev.internal.setup.util.endpointOverride
 import io.papermc.paperweight.userdev.internal.setup.util.genSources
 import io.papermc.paperweight.util.*
 import io.papermc.paperweight.util.constants.*
@@ -76,6 +77,7 @@ abstract class PaperweightUser : Plugin<Project> {
                         bundleZip.set(devBundleZip)
                         downloadService.set(target.download)
                         genSources.set(target.genSources)
+                        endpointOverride.set(target.endpointOverride)
                     }
                 }
                 .get()
@@ -144,7 +146,7 @@ abstract class PaperweightUser : Plugin<Project> {
                 .configure(target, reobfJar)
 
             if (userdev.injectPaperRepository.get()) {
-                target.repositories.maven(PAPER_MAVEN_REPO_URL) {
+                target.repositories.maven(target.endpointOverride.paperMavenRepo) {
                     content { onlyForConfigurations(DEV_BUNDLE_CONFIG) }
                 }
             }

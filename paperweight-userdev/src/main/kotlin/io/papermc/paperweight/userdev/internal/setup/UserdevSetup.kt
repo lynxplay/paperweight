@@ -26,6 +26,7 @@ import io.papermc.paperweight.DownloadService
 import io.papermc.paperweight.userdev.internal.setup.util.lockSetup
 import io.papermc.paperweight.util.*
 import io.papermc.paperweight.util.constants.*
+import java.io.Serializable
 import java.nio.file.Path
 import org.gradle.api.Project
 import org.gradle.api.artifacts.DependencySet
@@ -49,7 +50,15 @@ abstract class UserdevSetup : BuildService<UserdevSetup.Parameters>, SetupHandle
         val cache: RegularFileProperty
         val downloadService: Property<DownloadService>
         val genSources: Property<Boolean>
+        val endpointOverride: Property<EndpointOverride>
     }
+
+    data class EndpointOverride (
+        val minecraftLibraries: String,
+        val minecraftManifest: String,
+        val paperMavenRepo: String,
+        val mavenCentral: String
+    ) : Serializable
 
     private val extractDevBundle: ExtractedBundle<Any> = lockSetup(parameters.cache.path) {
         extractDevBundle(
