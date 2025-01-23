@@ -26,6 +26,7 @@ import codechicken.diffpatch.cli.PatchOperation
 import codechicken.diffpatch.match.FuzzyLineMatcher
 import codechicken.diffpatch.util.LoggingOutputStream
 import codechicken.diffpatch.util.PatchMode
+import io.papermc.paperweight.PaperweightException
 import io.papermc.paperweight.tasks.*
 import io.papermc.paperweight.util.*
 import java.io.PrintStream
@@ -145,9 +146,23 @@ abstract class ApplyFilePatches : BaseTask() {
     private fun applyWithGit(outputPath: Path): Int {
         val git = Git(outputPath)
         val patches = patches.path.filesMatchingRecursive("*.patch")
-        val patchStrings = patches.map { outputPath.relativize(it).pathString }
-        patchStrings.chunked(12).forEach {
-            git("apply", "--3way", *it.toTypedArray()).executeSilently(silenceOut = !verbose.get(), silenceErr = !verbose.get())
+        patches.forEach { patch ->
+            val patchPathFromGit = outputPath.relativize(patch)
+            val responseCode = git("apply", "--3way", patchPathFromGit.pathString).runSilently(silenceOut = !verbose.get(), silenceErr = !verbose.get())
+            when {
+                responseCode == 0 -> {}
+                responseCode > 1 -> throw PaperweightException("Failed to apply patch $patch: $responseCode")
+                responseCode == 1 && rejects.isPresent -> {
+                    val relativePatch = this.patches.path.relativize(patch)
+                    val failedFile = relativePatch.parent.resolve(relativePatch.fileName.toString().substringBeforeLast(".patch"))
+                    git("reset", "--", failedFile.pathString).executeSilently(silenceOut = !verbose.get(), silenceErr = !verbose.get())
+                    git("restore", failedFile.pathString).executeSilently(silenceOut = !verbose.get(), silenceErr = !verbose.get())
+
+                    val rejectFile = rejects.path.resolve(relativePatch)
+                    rejectFile.createParentDirectories()
+                    patch.copyTo(rejectFile, overwrite = true)
+                }
+            }
         }
 
         commit()
